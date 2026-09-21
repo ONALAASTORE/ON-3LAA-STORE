@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { motion, AnimatePresence, type Variants } from 'motion/react';
 import { 
   SlidersHorizontal, 
@@ -1719,6 +1720,9 @@ export function App() {
         onClose={() => setIsAccountOpen(false)}
         whatsappNumber={storeSettings.whatsappNumber}
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
