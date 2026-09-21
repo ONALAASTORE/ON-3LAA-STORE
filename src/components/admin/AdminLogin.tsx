@@ -8,6 +8,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { LogoAvatar, Brand3DText } from '../brand';
+import { loginAdminUser } from '../../services/authService';
 
 interface AdminLoginProps {
   onLoginSuccess: () => void;
@@ -24,21 +25,19 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg('');
 
-    setTimeout(() => {
-      if (email.trim() === 'alaastoreon@gmail.com' && password === 'A123321A') {
-        localStorage.setItem('on_alaa_admin_auth', 'true');
-        localStorage.setItem('on_alaa_admin_auth_time', Date.now().toString());
-        onLoginSuccess();
-      } else {
-        setErrorMsg('Invalid administrator credentials. Access restricted.');
-      }
+    try {
+      await loginAdminUser(email, password);
+      onLoginSuccess();
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Invalid administrator credentials. Access restricted.');
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   return (

@@ -10,6 +10,8 @@ import {
   query
 } from 'firebase/firestore';
 import { db, PRODUCTS_COLLECTION } from './firebase';
+import { processAndUploadProductImages, isBase64DataUrl } from './storageService';
+import { ensureAdminAuthenticated } from './authService';
 import { Product } from '../types';
 import { PRODUCTS } from '../data/products';
 import { generateProductSku } from '../utils/sku';
@@ -186,42 +188,74 @@ export async function fetchProductsFromFirestore(): Promise<Product[]> {
  * Save or overwrite a product in Firestore permanently (with local backup)
  */
 export async function saveProductToFirestore(product: Product): Promise<void> {
-  // Always update local cache so user updates persist immediately
+  const productId = product.id;
+  if (!productId) {
+    throw new Error('Product must have a valid ID before saving to Firestore');
+  }
+
+  // 1. Verify and ensure authenticated admin session before write
+  await ensureAdminAuthenticated();
+
+  // 2. Upload any raw base64 images to Firebase Storage first
+  let preparedProduct: Product = { ...product };
+  const rawImages = Array.isArray(preparedProduct.galleryImages) && preparedProduct.galleryImages.length > 0
+    ? preparedProduct.galleryImages
+    : (preparedProduct.image ? [preparedProduct.image] : []);
+
+  const containsBase64 = rawImages.some((img) => isBase64DataUrl(img)) || isBase64DataUrl(preparedProduct.image);
+
+  if (containsBase64) {
+    try {
+      const uploadedUrls = await processAndUploadProductImages(rawImages, productId);
+      if (uploadedUrls.length > 0) {
+        const primaryUrl = uploadedUrls[0];
+        preparedProduct = {
+          ...preparedProduct,
+          image: primaryUrl,
+          galleryImages: uploadedUrls,
+          imageUrls: uploadedUrls,
+          image_urls: uploadedUrls,
+          additional_images: uploadedUrls.slice(1),
+        };
+      }
+    } catch (storageErr) {
+      console.warn(`[Firebase Storage] Note processing images for ${productId}:`, storageErr);
+    }
+  }
+
+  // Always update local cache with clean URLs so user updates persist immediately
   try {
     const current = safeGetProductsFromLocalStorage() || [];
-    const index = current.findIndex((p) => p.id === product.id);
+    const index = current.findIndex((p) => p.id === productId);
     const updated = index >= 0
-      ? current.map((p) => (p.id === product.id ? product : p))
-      : [product, ...current];
+      ? current.map((p) => (p.id === productId ? preparedProduct : p))
+      : [preparedProduct, ...current];
     safeSaveProducts(updated);
   } catch (e) {
     console.warn('[Storage] Local update note:', e);
   }
 
   if (isFirestoreQuotaExceeded()) {
-    console.info(`[Firestore] Daily quota reached. Product "${product.name}" (${product.id}) saved to local cache.`);
+    console.info(`[Firestore] Daily quota reached. Product "${preparedProduct.name}" (${productId}) saved to local cache.`);
     return;
   }
 
   try {
-    const productId = product.id;
-    if (!productId) {
-      throw new Error('Product must have a valid ID before saving to Firestore');
-    }
     const productRef = doc(db, PRODUCTS_COLLECTION, productId);
     const sanitized = sanitizeForFirestore({
-      ...product,
+      ...preparedProduct,
       updatedAt: new Date().toISOString()
     });
     await setDoc(productRef, sanitized, { merge: true });
-    console.log(`[Firestore] Successfully saved product "${product.name}" (${productId})`);
+    console.log(`[Firestore] Successfully saved product "${preparedProduct.name}" (${productId})`);
   } catch (err: any) {
     if (isFirestoreQuotaError(err)) {
       markFirestoreQuotaExceeded();
-      console.warn(`[Firestore] Daily quota reached while saving "${product.name}". Saved to offline storage.`);
+      console.warn(`[Firestore] Daily quota reached while saving "${preparedProduct.name}". Saved to offline storage.`);
       return;
     }
-    console.warn(`[Firestore] Note saving product "${product.name}":`, err?.message || err);
+    console.warn(`[Firestore] Note saving product "${preparedProduct.name}":`, err?.message || err);
+    throw err;
   }
 }
 
