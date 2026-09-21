@@ -1,0 +1,268 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #0B0B0C;         /* Deep Black / Midnight Charcoal */
+  --bg-card: #16161A;         /* Dark gray surface for cards and containers */
+  --text-primary: #FFFFFF;    /* High-contrast crisp white */
+  --text-secondary: #A1A1AA;  /* Light zinc/gray for secondary text */
+  --accent-blue: #0066FF;     /* Vibrant Electric Blue */
+  --accent-cyan: #00D2FF;     /* Neon Cyan accent */
+  --border-color: #27272A;    /* Subtle dark border */
+}
+
+@theme {
+  --color-bg-main: var(--bg-main);
+  --color-bg-card: var(--bg-card);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-border-subtle: var(--border-color);
+}
+
+@layer base {
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    letter-spacing: -0.011em;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Geist', 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+  }
+
+  code, kbd, samp, pre, .font-mono {
+    font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.01em;
+  }
+
+  /* Prevent auto-zooming on iOS inputs */
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]), 
+    select, 
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* LayerX & Electric Blue Tech Utilities */
+.glass-layerx-dark {
+  background: rgba(18, 18, 22, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-electric-blue {
+  box-shadow: 0 0 25px -5px rgba(0, 102, 255, 0.35);
+}
+
+.glow-electric-blue-sm {
+  box-shadow: 0 0 15px -3px rgba(0, 102, 255, 0.25);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 15px -3px rgba(0, 210, 255, 0.3);
+}
+
+.electric-blue-border-hover:hover {
+  border-color: rgba(0, 102, 255, 0.7);
+  box-shadow: 0 4px 20px -2px rgba(0, 102, 255, 0.2);
+}
+
+.glass-layerx-light {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Fluid Typography Utilities using CSS clamp() */
+.text-fluid-hero {
+  font-size: clamp(1.85rem, 3.6vw + 0.6rem, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.text-fluid-h2 {
+  font-size: clamp(1.4rem, 2.2vw + 0.4rem, 2.25rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.text-fluid-h3 {
+  font-size: clamp(1.1rem, 1.4vw + 0.35rem, 1.5rem);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.text-fluid-price {
+  font-size: clamp(1.125rem, 1.4vw + 0.45rem, 1.75rem);
+  line-height: 1.2;
+}
+
+.text-fluid-body {
+  font-size: clamp(0.875rem, 0.5vw + 0.75rem, 1rem);
+  line-height: 1.6;
+}
+
+/* Safe area insets for mobile devices */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+
+/* Minimalist Touch Target */
+.touch-target-min {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Subtle Technical Grid Overlay */
+.tech-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.tech-grid-bg-light {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(161, 161, 170, 0.45);
+}
+
+/* Micro-interaction transitions */
+.transition-micro {
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Minimal Clean Focus Ring */
+*:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
+.light *:focus-visible {
+  outline: 1px solid rgba(0, 0, 0, 0.35);
+  outline-offset: 2px;
+}
+
+/* Subtle WhatsApp Floating Button Pulse & Gentle Bounce */
+@keyframes wa-subtle-pulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+  25% {
+    transform: translateY(-2px) scale(1.035);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.28);
+  }
+  45% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+  60% {
+    transform: translateY(-1px) scale(1.018);
+    box-shadow: 0 3px 8px rgba(37, 211, 102, 0.2);
+  }
+  80% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.animate-wa-pulse {
+  animation: wa-subtle-pulse 3.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  will-change: transform, box-shadow;
+}
+
+.animate-wa-pulse:hover {
+  animation-play-state: paused;
+  transform: translateY(-1.5px) scale(1.04);
+}
+
+/* Professional Skeleton Screen Shimmer Keyframes & Classes */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-skeleton {
+  background: linear-gradient(
+    90deg,
+    #F1F5F9 0%,
+    #E2E8F0 25%,
+    #F8FAFC 50%,
+    #E2E8F0 75%,
+    #F1F5F9 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.dark .animate-skeleton {
+  background: linear-gradient(
+    90deg,
+    #27272A 0%,
+    #3F3F46 25%,
+    #52525B 50%,
+    #3F3F46 75%,
+    #27272A 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
